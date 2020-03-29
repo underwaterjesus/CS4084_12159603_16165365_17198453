@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -62,6 +63,17 @@ public class CategoryFragment extends Fragment {
             @Override
             public void onItemClick(int position) {
                 MainActivity.showToast(getContext(), locations.get(position).getName());
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("Location", locations.get(position));
+
+                Fragment frag = new LocationFragment();
+                frag.setArguments(bundle);
+
+                FragmentTransaction tranny = getActivity().getSupportFragmentManager().beginTransaction();
+                tranny.replace(R.id.fragment_container, frag);
+                tranny.addToBackStack(null);
+                tranny.commit();
             }
         });
         recyclerView.setAdapter(mAdapter);
