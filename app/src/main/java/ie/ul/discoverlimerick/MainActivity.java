@@ -54,14 +54,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private DrawerLayout drawer;
 
-    public static CategoryItem[] CATEGORIES = {new CategoryItem(R.drawable.ic_log_in, "All"),
-                                                new CategoryItem(R.drawable.ic_log_in, "Amusements"),
-                                                new CategoryItem(R.drawable.ic_log_in, "Arts & Culture"),
-                                                new CategoryItem(R.drawable.ic_log_in, "Bars"),
-                                                new CategoryItem(R.drawable.ic_log_in, "Family"),
-                                                new CategoryItem(R.drawable.ic_log_in, "Nightlife"),
-                                                new CategoryItem(R.drawable.ic_log_in, "Outdoors"),
-                                                new CategoryItem(R.drawable.ic_log_in, "Sports")};
+    public static CategoryItem[] CATEGORIES = {new CategoryItem(R.drawable.ic_drag, "All"),
+                                                new CategoryItem(R.drawable.ic_bowling, "Amusements"),
+                                                new CategoryItem(R.drawable.ic_bank, "Arts & Culture"),
+                                                new CategoryItem(R.drawable.ic_local_bar_24px, "Bars"),
+                                                new CategoryItem(R.drawable.ic_family, "Family"),
+                                                new CategoryItem(R.drawable.ic_disco_ball, "Nightlife"),
+                                                new CategoryItem(R.drawable.ic_explore_24px, "Outdoors"),
+                                                new CategoryItem(R.drawable.ic_sports_football_24px, "Sports")};
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     public static String selected_category;
