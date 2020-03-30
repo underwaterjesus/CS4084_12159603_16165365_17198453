@@ -65,7 +65,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Leave A\nReview"
-            android:textSize="18dp" />
+            android:textSize="18dp"
+            android:onClick="onLeaveReviewClicked"/>
 
         <Button
             android:id="@+id/read_reviews"
@@ -73,7 +74,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Read\nReviews"
-            android:textSize="18dp" />
+            android:textSize="18dp"
+            android:onClick="onReadReviewsClicked" />
 
     </LinearLayout>
 

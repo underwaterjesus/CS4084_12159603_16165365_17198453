@@ -74,17 +74,17 @@ public class MyLocation implements Serializable {
     {
         double x1 = Math.toRadians(lat);
         double x2 = Math.toRadians(start.getLatitude());
-        Log.d("x1", Double.toString(x1));Log.d("x2", Double.toString(x2));
+
         double deltaX = Math.toRadians( (start.getLatitude()) - (lat) );
         double deltaY = Math.toRadians( (start.getLongitude()) - (lng) );
-        Log.d("dx", Double.toString(deltaX));Log.d("dy", Double.toString(deltaY));
+
 
         double a = (
                 (Math.sin(deltaX / 2) *  Math.sin(deltaX / 2)) +
                  Math.cos(x1) * Math.cos(x2) *
                  (Math.sin(deltaY / 2) * Math.sin(deltaY / 2)));
         double c = 2 * Math.asin(Math.sqrt(a));
-        Log.d("a", Double.toString(a));Log.d("c", Double.toString(c));Log.d("r", Double.toString(c * 6371.0));
+
         return c * 6371.0;
     }
 }
