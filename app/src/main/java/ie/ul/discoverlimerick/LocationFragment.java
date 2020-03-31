@@ -43,9 +43,9 @@ public class LocationFragment extends Fragment {
         tv2.setText(location.getAddress());
         tv3.setText(location.getDesc());
 
-        leaveReview = (Button)view.findViewById(R.id.leave_review);
-        readReviews = (Button)view.findViewById(R.id.read_reviews);
-        viewMap = (Button)view.findViewById(R.id.mapBtn);
+        leaveReview = (Button) view.findViewById(R.id.leave_review);
+        readReviews = (Button) view.findViewById(R.id.read_reviews);
+        viewMap = (Button) view.findViewById(R.id.mapBtn);
 
         leaveReview.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,6 +78,23 @@ public class LocationFragment extends Fragment {
     }
 
     private void onLeaveReviewClicked(View v) {
+        if (MainActivity.mAuth.getCurrentUser() != null) {
 
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("Location", location);
+
+            Fragment frag = new LeaveReviewFragment();
+            frag.setArguments(bundle);
+
+            FragmentTransaction tranny = getActivity().getSupportFragmentManager().beginTransaction();
+            tranny.replace(R.id.fragment_container, frag);
+            tranny.addToBackStack(null);
+            tranny.commit();
+
+        } else {
+
+            MainActivity.showToast(getContext(), "Please log in to leave a review");
+
+        }
     }
 }
