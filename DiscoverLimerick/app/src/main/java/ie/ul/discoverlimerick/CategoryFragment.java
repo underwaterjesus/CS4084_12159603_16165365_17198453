@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,7 +36,6 @@ public class CategoryFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.d("Testing onCreate()", "In method");
         getLocations();
         super.onCreate(savedInstanceState);
     }
@@ -45,15 +45,10 @@ public class CategoryFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_category, container, false);
         setCycler(view);
-        //getLocations();
-
-        //TextView textView = view.findViewById(R.id.test);
-        //textView.setText(MainActivity.selected_category);
-
         return view;
     }
 
-    public void setCycler(View v){
+    private void setCycler(View v){
         recyclerView = (RecyclerView) v.findViewById(R.id.category_cycler);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
@@ -62,12 +57,25 @@ public class CategoryFragment extends Fragment {
             @Override
             public void onItemClick(int position) {
                 MainActivity.showToast(getContext(), locations.get(position).getName());
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("Location", locations.get(position));
+
+                MainActivity.selected_location = locations.get(position).getId();
+
+                Fragment frag = new LocationFragment();
+                frag.setArguments(bundle);
+
+                FragmentTransaction tranny = getActivity().getSupportFragmentManager().beginTransaction();
+                tranny.replace(R.id.fragment_container, frag);
+                tranny.addToBackStack(null);
+                tranny.commit();
             }
         });
         recyclerView.setAdapter(mAdapter);
     }
 
-    public void getLocations() {
+    private void getLocations() {
         locations = new ArrayList<MyLocation>();
         db = FirebaseFirestore.getInstance().collection(MainActivity.selected_category);
         db.orderBy("name", Query.Direction.ASCENDING);
@@ -75,7 +83,6 @@ public class CategoryFragment extends Fragment {
         db.get().addOnCompleteListener((new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                //MainActivity.showToast(this,  task.isSuccessful() ? "SUCCESS" : "FAIL");
                 if (task.isSuccessful()) {
                     for(QueryDocumentSnapshot document : task.getResult()){
                         try{

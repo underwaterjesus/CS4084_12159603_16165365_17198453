@@ -3,7 +3,9 @@ package ie.ul.discoverlimerick;
 import android.location.Location;
 import android.util.Log;
 
-public class MyLocation {
+import java.io.Serializable;
+
+public class MyLocation implements Serializable {
     private String id;
     private String name;
     private String address;
@@ -18,6 +20,14 @@ public class MyLocation {
         this.desc = desc;
         this.lat = lat;
         this.lng = lng;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getId() {
@@ -64,17 +74,17 @@ public class MyLocation {
     {
         double x1 = Math.toRadians(lat);
         double x2 = Math.toRadians(start.getLatitude());
-        Log.d("x1", Double.toString(x1));Log.d("x2", Double.toString(x2));
+
         double deltaX = Math.toRadians( (start.getLatitude()) - (lat) );
         double deltaY = Math.toRadians( (start.getLongitude()) - (lng) );
-        Log.d("dx", Double.toString(deltaX));Log.d("dy", Double.toString(deltaY));
+
 
         double a = (
                 (Math.sin(deltaX / 2) *  Math.sin(deltaX / 2)) +
                  Math.cos(x1) * Math.cos(x2) *
                  (Math.sin(deltaY / 2) * Math.sin(deltaY / 2)));
         double c = 2 * Math.asin(Math.sqrt(a));
-        Log.d("a", Double.toString(a));Log.d("c", Double.toString(c));Log.d("r", Double.toString(c * 6371.0));
+
         return c * 6371.0;
     }
 }
