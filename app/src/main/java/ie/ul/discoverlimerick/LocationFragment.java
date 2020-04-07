@@ -15,9 +15,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class LocationFragment extends Fragment {
     private TextView tv1;
@@ -30,7 +34,11 @@ public class LocationFragment extends Fragment {
     private Button viewMap;
 
     private CollectionReference db;
+    private FirebaseStorage storage;
+    private StorageReference mStorageReference;
     private MyLocation location;
+
+    private final static String PROJECT_URL = "gs://discover-limerick.appspot.com";
 
     @Nullable
     @Override
@@ -38,6 +46,15 @@ public class LocationFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_location, container, false);
 
         location = (MyLocation) getArguments().getSerializable("Location");
+
+        storage = FirebaseStorage.getInstance();
+        mStorageReference = storage.getReference();
+
+        String referenceString = "img/" + location.getId() + ".jpg";
+        StorageReference imgRef = mStorageReference.child(referenceString);
+
+        img = (ImageView) view.findViewById(R.id.img);
+        Glide.with(this).load(imgRef).into(img);
 
         tv1 = (TextView) view.findViewById(R.id.tv1);
         tv2 = (TextView) view.findViewById(R.id.tv2);

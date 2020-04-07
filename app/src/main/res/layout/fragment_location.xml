@@ -46,8 +46,9 @@
 
             <ImageView
                 android:id="@+id/img"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/tv3"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:layout_margin="3dp" />
