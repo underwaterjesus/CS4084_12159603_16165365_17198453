@@ -29,7 +29,6 @@ public class MyReviewsFragment extends Fragment {
     private RecyclerView.LayoutManager layoutManager;
     private ReviewAdapter adapter;
 
-    private static CollectionReference db;
     private static ArrayList<Review> reviews;
 
     @Override
@@ -60,6 +59,7 @@ public class MyReviewsFragment extends Fragment {
     private void getReviews() {
         if (MainActivity.mAuth.getCurrentUser() == null) {
             MainActivity.showToast(getContext(), "Error: please log in again");
+            MainActivity.sendHome = false;
             getActivity().getSupportFragmentManager().popBackStack();
         } else {
             reviews = new ArrayList<Review>();

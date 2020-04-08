@@ -241,6 +241,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 sendHome = true;
                 onMyReviewsClicked();
                 break;
+            case R.id.nav_my_images:
+                if (drawer.isDrawerOpen(GravityCompat.START))
+                    drawer.closeDrawer(GravityCompat.START);
+                sendHome = true;
+                onMyImagesClicked();
+                break;
         }
 
         return true;
@@ -250,6 +256,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (mAuth.getCurrentUser() != null) {
             FragmentTransaction tranny = getSupportFragmentManager().beginTransaction();
             tranny.replace(R.id.fragment_container, new MyReviewsFragment());
+            tranny.addToBackStack(null);
+            tranny.commit();
+        } else {
+            showToast(this, "Please login to complete this action");
+            if (drawer.isDrawerOpen(GravityCompat.START))
+                drawer.closeDrawer(GravityCompat.START);
+            goHome();
+        }
+    }
+
+    private void onMyImagesClicked() {
+        if (mAuth.getCurrentUser() != null) {
+            FragmentTransaction tranny = getSupportFragmentManager().beginTransaction();
+            tranny.replace(R.id.fragment_container, new MyUploadsFragment());
             tranny.addToBackStack(null);
             tranny.commit();
         } else {

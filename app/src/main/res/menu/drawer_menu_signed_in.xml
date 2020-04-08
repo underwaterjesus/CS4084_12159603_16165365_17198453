@@ -11,6 +11,12 @@
         android:id="@+id/nav_my_reviews"
         android:icon="@drawable/ic_my_reviews"
         android:title="My Reviews" />
+
+    <item
+        android:id="@+id/nav_my_images"
+        android:icon="@drawable/ic_image_collection"
+        android:title="My Images" />
+
     <item
         android:id="@+id/nav_log_out"
         android:icon="@drawable/ic_logout"
