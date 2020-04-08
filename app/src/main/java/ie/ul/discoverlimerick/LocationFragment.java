@@ -31,6 +31,8 @@ public class LocationFragment extends Fragment {
 
     private Button leaveReview;
     private Button readReviews;
+    private Button leaveImage;
+    private Button viewImages;
     private Button viewMap;
 
     private CollectionReference db;
@@ -66,6 +68,8 @@ public class LocationFragment extends Fragment {
 
         leaveReview = (Button) view.findViewById(R.id.leave_review);
         readReviews = (Button) view.findViewById(R.id.read_reviews);
+        leaveImage = (Button) view.findViewById(R.id.leave_image);
+        viewImages = (Button) view.findViewById(R.id.view_images);
         viewMap = (Button) view.findViewById(R.id.mapBtn);
 
         leaveReview.setOnClickListener(new View.OnClickListener() {
@@ -82,6 +86,20 @@ public class LocationFragment extends Fragment {
             }
         });
 
+        leaveImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onLeaveImageClicked();
+            }
+        });
+
+        viewImages.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onViewImagesClicked();
+            }
+        });
+
         viewMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,6 +108,28 @@ public class LocationFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void onLeaveImageClicked() {
+        if(MainActivity.mAuth.getCurrentUser() != null) {
+            Fragment frag = new UploadFragment();
+
+            FragmentTransaction tranny = getActivity().getSupportFragmentManager().beginTransaction();
+            tranny.replace(R.id.fragment_container, frag);
+            tranny.addToBackStack(null);
+            tranny.commit();
+        }else {
+            MainActivity.showToast(getContext(), "Please login to upload an image");
+        }
+    }
+
+    private void onViewImagesClicked(){
+        Fragment frag = new ViewUploadsFragment();
+
+        FragmentTransaction tranny = getActivity().getSupportFragmentManager().beginTransaction();
+        tranny.replace(R.id.fragment_container, frag);
+        tranny.addToBackStack(null);
+        tranny.commit();
     }
 
     private void onReadReviewsClicked(View v) {

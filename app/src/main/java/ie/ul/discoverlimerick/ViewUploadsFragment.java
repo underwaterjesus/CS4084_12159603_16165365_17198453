@@ -21,46 +21,47 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class ReadReviewsFragment extends Fragment {
+public class ViewUploadsFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
-    private ReviewAdapter adapter;
-    private MyLocation location;
+    private UploadAdapter adapter;
 
     private static CollectionReference db;
-    private static ArrayList<Review> reviews;
+    private static ArrayList<Upload> uploads;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        location = (MyLocation) getArguments().getSerializable("Location");
-        getReviews();
         super.onCreate(savedInstanceState);
+        getUploads();
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_read_reviews, container, false);
-        setCycler(view);
+        View view = inflater.inflate(R.layout.fragment_view_uploads, container, false);
+
+        setRecycler(view);
+
         return view;
     }
 
-    private void getReviews() {
-        reviews = new ArrayList<Review>();
+    private void getUploads() {
+        uploads = new ArrayList<Upload>();
 
-        db = FirebaseFirestore.getInstance().collection(MainActivity.selected_category).document(MainActivity.selected_location).collection("Reviews");
+        db = FirebaseFirestore.getInstance().collection(MainActivity.selected_category).document(MainActivity.selected_location).collection("Images");
         db.orderBy("time", Query.Direction.DESCENDING);
 
         db.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()){
-                    for (QueryDocumentSnapshot document : task.getResult()){
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
                         try {
-                            Review temp = new Review(document.getId(), document.getString("username"), document.getString("review"), document.getTimestamp("time"), location);
-                            reviews.add(temp);
-                        }catch (Exception e){
+                            Upload toAdd = new Upload(document.getTimestamp("time"), document.getString("username"), document.getString("fileName"), document.getString("userID"));
+                            uploads.add(toAdd);
+                        } catch (Exception e) {
                             String s = e.getMessage() != null ? e.getMessage() : "unable to give more details";
                             Log.d("Exception Caught: ", s);
                         }
@@ -71,12 +72,12 @@ public class ReadReviewsFragment extends Fragment {
         });
     }
 
-    private void setCycler(View view) {
-        recyclerView = (RecyclerView) view.findViewById(R.id.review_recycler);
+    private void setRecycler(View view) {
+        recyclerView = (RecyclerView) view.findViewById(R.id.uploads_recycler);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new ReviewAdapter(reviews);
+        adapter = new UploadAdapter(uploads, getContext());
 
         recyclerView.setAdapter(adapter);
     }

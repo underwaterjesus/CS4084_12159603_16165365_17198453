@@ -47,7 +47,7 @@ public class ReviewAdapter extends RecyclerView.Adapter {
                         }
                     }
                 }
-            });
+            })  ;
         }
     }
 

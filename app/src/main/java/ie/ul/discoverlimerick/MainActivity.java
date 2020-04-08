@@ -55,8 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private DrawerLayout drawer;
 
-    public static CategoryItem[] CATEGORIES = {new CategoryItem(R.drawable.ic_drag, "All"),
-                                                new CategoryItem(R.drawable.ic_bowling, "Amusements"),
+    public static CategoryItem[] CATEGORIES = { new CategoryItem(R.drawable.ic_bowling, "Amusements"),
                                                 new CategoryItem(R.drawable.ic_bank, "Arts & Culture"),
                                                 new CategoryItem(R.drawable.ic_local_bar_24px, "Bars"),
                                                 new CategoryItem(R.drawable.ic_family, "Family"),

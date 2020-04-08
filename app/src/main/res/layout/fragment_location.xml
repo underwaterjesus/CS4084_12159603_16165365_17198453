@@ -7,7 +7,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_weight="1.75">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -58,42 +58,70 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="4">
+        android:layout_weight="5.2"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/leave_review"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="Leave A\nReview"
-            android:textSize="18dp"
-            android:onClick="onLeaveReviewClicked"/>
+            android:layout_weight="1">
 
-        <Button
-            android:id="@+id/read_reviews"
+            <Button
+                android:id="@+id/leave_review"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onLeaveReviewClicked"
+                android:text="Leave A\nReview" />
+
+            <Button
+                android:id="@+id/read_reviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onReadReviewsClicked"
+                android:text="Read\nReviews" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="Read\nReviews"
-            android:textSize="18dp"
-            android:onClick="onReadReviewsClicked" />
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/leave_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onLeaveReviewClicked"
+                android:text="Upload\nAn Image" />
+
+            <Button
+                android:id="@+id/view_images"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onReadReviewsClicked"
+                android:text="View User\nUploaded Images" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="4">
+        android:layout_weight="5.5">
 
         <Button
             android:id="@+id/mapBtn"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#167dfa"
-            android:text="View On\nMap"
+            android:drawableRight="@drawable/ic_gps"
             android:drawablePadding="-45dp"
-            android:textSize="18dp"
-            android:drawableRight="@drawable/ic_gps"/>
+            android:text="View On\nMap"
+            android:textSize="18dp" />
 
     </LinearLayout>
 
