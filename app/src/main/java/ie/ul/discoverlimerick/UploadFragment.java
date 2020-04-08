@@ -69,9 +69,9 @@ public class UploadFragment extends Fragment {
         uploadFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mUploadTask != null && mUploadTask.isInProgress()) {
+                if (mUploadTask != null && mUploadTask.isInProgress()) {
                     MainActivity.showToast(getContext(), "Upload in progress");
-                }else {
+                } else {
                     uploadChosenFile();
                 }
 
@@ -84,7 +84,7 @@ public class UploadFragment extends Fragment {
         return view;
     }
 
-    private String getFileExtension(Uri uri){
+    private String getFileExtension(Uri uri) {
         ContentResolver contentResolver = getContext().getContentResolver();
         MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
 
@@ -92,58 +92,63 @@ public class UploadFragment extends Fragment {
     }
 
     private void uploadChosenFile() {
-        if(mImageUri != null){
-            int r = (int) (Math.random() * 100);
-            final Timestamp stamp = Timestamp.now();
-            final String fileName = Integer.toString(r) + Long.toString(System.currentTimeMillis()) + "." + getFileExtension(mImageUri);
-            StorageReference fileReference = mStorageReference.child(fileName);
+        if (MainActivity.mAuth.getCurrentUser() != null) {
+            if (mImageUri != null) {
+                int r = (int) (Math.random() * 100);
+                final Timestamp stamp = Timestamp.now();
+                final String fileName = Integer.toString(r) + Long.toString(System.currentTimeMillis()) + "." + getFileExtension(mImageUri);
+                StorageReference fileReference = mStorageReference.child(fileName);
 
-            mUploadTask = fileReference.putFile(mImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mProgressBar.setProgress(0);
-                        }
-                    }, 1000);
+                mUploadTask = fileReference.putFile(mImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                mProgressBar.setProgress(0);
+                            }
+                        }, 1000);
 
-                    Map<String, Object> upload = new HashMap<>();
-                    upload.put("time", stamp);
-                    upload.put("username", MainActivity.mAuth.getCurrentUser().getDisplayName());
-                    upload.put("userID", MainActivity.mAuth.getCurrentUser().getUid());
-                    upload.put("fileName", fileName);
+                        Map<String, Object> upload = new HashMap<>();
+                        upload.put("time", stamp);
+                        upload.put("username", MainActivity.mAuth.getCurrentUser().getDisplayName());
+                        upload.put("userID", MainActivity.mAuth.getCurrentUser().getUid());
+                        upload.put("fileName", fileName);
 
-                    db.collection(MainActivity.selected_category).document(MainActivity.selected_location).collection("Images").add(upload)
-                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                @Override
-                                public void onSuccess(DocumentReference documentReference) {
-                                    MainActivity.showToast(getContext(), "Upload Successful");
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    MainActivity.showToast(getContext(), "Error: Upload Unsuccessful");
-                                }
-                            });
+                        db.collection(MainActivity.selected_category).document(MainActivity.selected_location).collection("Images").add(upload)
+                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                    @Override
+                                    public void onSuccess(DocumentReference documentReference) {
+                                        MainActivity.showToast(getContext(), "Upload Successful");
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                MainActivity.showToast(getContext(), "Error: Upload Unsuccessful");
+                            }
+                        });
 
-                    MainActivity.showToast(getContext(), "Upload Successful");
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    MainActivity.showToast(getContext(), e.getMessage());
-                }
-            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
-                    double progress = 100.0 * ( ((double) taskSnapshot.getBytesTransferred()) / ((double) taskSnapshot.getTotalByteCount()) );
-                    mProgressBar.setProgress((int) progress);
-                }
-            });
-        }else {
-            MainActivity.showToast(getContext(), "No file selected");
+                        MainActivity.showToast(getContext(), "Upload Successful");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        MainActivity.showToast(getContext(), e.getMessage());
+                    }
+                }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
+                        double progress = 100.0 * (((double) taskSnapshot.getBytesTransferred()) / ((double) taskSnapshot.getTotalByteCount()));
+                        mProgressBar.setProgress((int) progress);
+                    }
+                });
+            } else {
+                MainActivity.showToast(getContext(), "No file selected");
+            }
+        } else {
+            MainActivity.showToast(getContext(), "Please login to upload an image");
+            getActivity().getSupportFragmentManager().popBackStack();
         }
     }
 
@@ -159,8 +164,8 @@ public class UploadFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == SELECT_FILE_REQUEST && resultCode == RESULT_OK
-            && data != null && data.getData() != null){
+        if (requestCode == SELECT_FILE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null) {
             mImageUri = data.getData();
             mImageView.setImageURI(mImageUri);
         }

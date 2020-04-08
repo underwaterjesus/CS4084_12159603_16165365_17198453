@@ -7,7 +7,7 @@ public class Review {
     private String username;
     private String review;
     private Timestamp stamp;
-    private static  MyLocation location;
+    private MyLocation location;
 
     public Review(String id, String username, String review, Timestamp stamp, MyLocation location) {
         this.id = id;
@@ -17,7 +17,7 @@ public class Review {
         this.location = location;
     }
 
-    public static MyLocation getLocation() {
+    public MyLocation getLocation() {
         return location;
     }
 

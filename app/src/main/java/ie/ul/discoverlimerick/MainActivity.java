@@ -9,7 +9,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -55,18 +57,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private DrawerLayout drawer;
 
-    public static CategoryItem[] CATEGORIES = { new CategoryItem(R.drawable.ic_bowling, "Amusements"),
-                                                new CategoryItem(R.drawable.ic_bank, "Arts & Culture"),
-                                                new CategoryItem(R.drawable.ic_local_bar_24px, "Bars"),
-                                                new CategoryItem(R.drawable.ic_family, "Family"),
-                                                new CategoryItem(R.drawable.ic_disco_ball, "Nightlife"),
-                                                new CategoryItem(R.drawable.ic_explore_24px, "Outdoors"),
-                                                new CategoryItem(R.drawable.ic_sports_football_24px, "Sports")};
+    public static CategoryItem[] CATEGORIES = {new CategoryItem(R.drawable.ic_bowling, "Amusements"),
+            new CategoryItem(R.drawable.ic_bank, "Arts & Culture"),
+            new CategoryItem(R.drawable.ic_local_bar_24px, "Bars"),
+            new CategoryItem(R.drawable.ic_family, "Family"),
+            new CategoryItem(R.drawable.ic_disco_ball, "Nightlife"),
+            new CategoryItem(R.drawable.ic_explore_24px, "Outdoors"),
+            new CategoryItem(R.drawable.ic_sports_football_24px, "Sports")};
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     public static String selected_category;
     public static String selected_location;
     public static boolean locationPermission;
+    public static boolean sendHome = false;
     private static final int RC_SIGN_IN = 123;
     private static Location mLastKnownLocation;
     private static LocationRequest mLocationRequest;
@@ -107,8 +110,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void monitorLocation() {
         Log.d("Monitor", Boolean.toString(locationPermission));
-        if(locationPermission)
-        {
+        if (locationPermission) {
             mLocationRequest = new LocationRequest();
             mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
             mLocationRequest.setInterval(10000);
@@ -137,23 +139,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void getPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED)
-        {
+                == PackageManager.PERMISSION_GRANTED) {
             locationPermission = true;
-        }
-        else
-        {
+        } else {
             //if(!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION))
-                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                                                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
 
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch(requestCode)
-        {
+        switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                     locationPermission = true;
@@ -163,16 +161,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void goHome() {
+        sendHome = false;
         getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
     }
 
     @Override
     public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START))
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        else
+        } else {
             super.onBackPressed();
+            sendHome = false;
+        }
     }
 
     public void onClickLogin() {
@@ -184,6 +185,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onClickLogOut() {
         mAuth.signOut();
         setMenu();
+        if (sendHome)
+            goHome();
     }
 
     @Override
@@ -232,13 +235,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     drawer.closeDrawer(GravityCompat.START);
                 onClickLogOut();
                 break;
+            case R.id.nav_my_reviews:
+                if (drawer.isDrawerOpen(GravityCompat.START))
+                    drawer.closeDrawer(GravityCompat.START);
+                sendHome = true;
+                onMyReviewsClicked();
+                break;
         }
 
         return true;
     }
 
-    public static Location getLastLocation()
-    {
+    private void onMyReviewsClicked() {
+        if (mAuth.getCurrentUser() != null) {
+            FragmentTransaction tranny = getSupportFragmentManager().beginTransaction();
+            tranny.replace(R.id.fragment_container, new MyReviewsFragment());
+            tranny.addToBackStack(null);
+            tranny.commit();
+        } else {
+            showToast(this, "Please login to complete this action");
+            if (drawer.isDrawerOpen(GravityCompat.START))
+                drawer.closeDrawer(GravityCompat.START);
+            goHome();
+        }
+    }
+
+    public static Location getLastLocation() {
         return mLastKnownLocation;
     }
 }

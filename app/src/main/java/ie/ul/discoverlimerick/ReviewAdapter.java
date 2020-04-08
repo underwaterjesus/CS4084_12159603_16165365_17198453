@@ -1,6 +1,7 @@
 package ie.ul.discoverlimerick;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,11 +48,11 @@ public class ReviewAdapter extends RecyclerView.Adapter {
                         }
                     }
                 }
-            })  ;
+            });
         }
     }
 
-    public ReviewAdapter(ArrayList<Review> data){
+    public ReviewAdapter(ArrayList<Review> data) {
         mDataset = data;
     }
 
@@ -67,13 +68,17 @@ public class ReviewAdapter extends RecyclerView.Adapter {
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ((ReviewHolder)holder).tv1.setText(Review.getLocation().getName());
-        ((ReviewHolder)holder).tv2.setText(mDataset.get(position).getReview());
+        try {
+            ((ReviewHolder) holder).tv1.setText(mDataset.get(position).getLocation().getName());
+            ((ReviewHolder) holder).tv2.setText(mDataset.get(position).getReview());
 
-        SimpleDateFormat form = new SimpleDateFormat("d MMM yyyy");
-        String date = form.format(mDataset.get(position).getStamp().toDate());
+            SimpleDateFormat form = new SimpleDateFormat("d MMM yyyy");
+            String date = form.format(mDataset.get(position).getStamp().toDate());
 
-        ((ReviewHolder)holder).tv4.setText( (mDataset.get(position).getUsername()) + " @ " + (date));
+            ((ReviewHolder) holder).tv4.setText((mDataset.get(position).getUsername()) + " @ " + (date));
+        } catch (Exception e) {
+            Log.d("ReviewAdapter", "Null MyLocation:onBindViewHolder");
+        }
     }
 
     @Override

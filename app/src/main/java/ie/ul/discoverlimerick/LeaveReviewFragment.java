@@ -94,6 +94,7 @@ public class LeaveReviewFragment extends Fragment {
                 entry.put("time", Timestamp.now());
                 entry.put("username", MainActivity.mAuth.getCurrentUser().getDisplayName());
                 entry.put("userID", MainActivity.mAuth.getCurrentUser().getUid());
+                entry.put("location_name", location.getName());
 
                 db.collection(MainActivity.selected_category).document(MainActivity.selected_location).collection("Reviews")
                         .add(entry).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {

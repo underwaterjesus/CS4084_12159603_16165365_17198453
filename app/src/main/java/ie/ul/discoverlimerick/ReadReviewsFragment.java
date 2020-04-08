@@ -55,16 +55,18 @@ public class ReadReviewsFragment extends Fragment {
         db.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()){
-                    for (QueryDocumentSnapshot document : task.getResult()){
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
                         try {
                             Review temp = new Review(document.getId(), document.getString("username"), document.getString("review"), document.getTimestamp("time"), location);
                             reviews.add(temp);
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             String s = e.getMessage() != null ? e.getMessage() : "unable to give more details";
                             Log.d("Exception Caught: ", s);
                         }
                     }
+                } else {
+                    MainActivity.showToast(getContext(), "Error: cannot access database");
                 }
                 adapter.notifyDataSetChanged();
             }
