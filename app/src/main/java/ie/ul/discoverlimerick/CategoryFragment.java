@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -31,12 +32,13 @@ public class CategoryFragment extends Fragment {
     private RecyclerView.LayoutManager layoutManager;
     private CycleLocationAdapter mAdapter;
 
+    private SearchView searchView;
+
     private static CollectionReference db;
     private static ArrayList<MyLocation> locations;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        getLocations();
         super.onCreate(savedInstanceState);
     }
 
@@ -44,38 +46,33 @@ public class CategoryFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_category, container, false);
-        setCycler(view);
+
+        getLocations(view);
+
+        searchView = view.findViewById(R.id.search_view);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                try {
+                    mAdapter.getFilter().filter(newText);
+                } catch (Exception e) {
+                    String s = e.getMessage() == null ? "unable to give more details" : e.getMessage();
+                    Log.d("onQueryTextChange", s);
+                }
+
+                return false;
+            }
+        });
+
         return view;
     }
 
-    private void setCycler(View v){
-        recyclerView = (RecyclerView) v.findViewById(R.id.category_cycler);
-        layoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);
-        mAdapter = new CycleLocationAdapter(locations);
-        mAdapter.setOnItemClickListener(new CycleLocationAdapter.OnItemClickListner() {
-            @Override
-            public void onItemClick(int position) {
-                MainActivity.showToast(getContext(), locations.get(position).getName());
-
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("Location", locations.get(position));
-
-                MainActivity.selected_location = locations.get(position).getId();
-
-                Fragment frag = new LocationFragment();
-                frag.setArguments(bundle);
-
-                FragmentTransaction tranny = getActivity().getSupportFragmentManager().beginTransaction();
-                tranny.replace(R.id.fragment_container, frag);
-                tranny.addToBackStack(null);
-                tranny.commit();
-            }
-        });
-        recyclerView.setAdapter(mAdapter);
-    }
-
-    private void getLocations() {
+    private void getLocations(final View v) {
         locations = new ArrayList<MyLocation>();
         db = FirebaseFirestore.getInstance().collection(MainActivity.selected_category);
         db.orderBy("name", Query.Direction.ASCENDING);
@@ -83,17 +80,42 @@ public class CategoryFragment extends Fragment {
         db.get().addOnCompleteListener((new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                recyclerView = (RecyclerView) v.findViewById(R.id.category_cycler);
+                layoutManager = new LinearLayoutManager(getContext());
+                recyclerView.setLayoutManager(layoutManager);
                 if (task.isSuccessful()) {
-                    for(QueryDocumentSnapshot document : task.getResult()){
-                        try{
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        try {
                             MyLocation temp = new MyLocation(document.getId(), document.getString("name"), document.getString("address"), document.getString("desc"), document.getDouble("lat"), document.getDouble("lng"));
-                            locations.add(temp); Log.d("Testing locations: ", Double.toString(temp.getLat()) + " - " + Double.toString(temp.getLng()));
-                        }catch (Exception e){
+                            locations.add(temp);
+                            Log.d("CategoryFragment: ", Double.toString(temp.getLat()) + " - " + Double.toString(temp.getLng()));
+                        } catch (Exception e) {
                             String s = e.getMessage() != null ? e.getMessage() : "unable to give more details";
                             Log.d("Exception Caught: ", s);
                         }
                     }
                 }
+                mAdapter = new CycleLocationAdapter(locations);
+                recyclerView.setAdapter(mAdapter);
+                mAdapter.setOnItemClickListener(new CycleLocationAdapter.OnItemClickListner() {
+                    @Override
+                    public void onItemClick(int position) {
+                        MainActivity.showToast(getContext(), locations.get(position).getName());
+
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("Location", locations.get(position));
+
+                        MainActivity.selected_location = locations.get(position).getId();
+
+                        Fragment frag = new LocationFragment();
+                        frag.setArguments(bundle);
+
+                        FragmentTransaction tranny = getActivity().getSupportFragmentManager().beginTransaction();
+                        tranny.replace(R.id.fragment_container, frag);
+                        tranny.addToBackStack(null);
+                        tranny.commit();
+                    }
+                });
                 mAdapter.notifyDataSetChanged();
             }
         }));

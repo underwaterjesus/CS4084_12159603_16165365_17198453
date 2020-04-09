@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/selected_category_linear_layout"
@@ -11,17 +11,20 @@
     tools:context=".MainActivity"
     tools:openDrawer="start">
 
-    <!--<TextView
-        android:id="@+id/test"
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/search_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="40sp"
-        android:layout_margin="8dp"/>-->
+        android:layout_height="50sp"
+        android:layout_marginBottom="3dp"
+        android:background="@android:color/white"
+        app:iconifiedByDefault="false"
+        app:queryHint="Search..." />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/category_cycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/search_view"
         android:scrollbars="vertical" />
 
-</LinearLayout>
+</RelativeLayout>

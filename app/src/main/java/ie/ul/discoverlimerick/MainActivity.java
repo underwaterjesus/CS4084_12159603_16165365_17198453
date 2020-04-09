@@ -171,6 +171,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
+            if(sendHome){
+                sendHome = false;
+                goHome();
+                return;
+            }
             super.onBackPressed();
             sendHome = false;
         }
@@ -214,6 +219,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             navigationView.inflateMenu(R.menu.drawer_menu);
         } else {
             navigationView.inflateMenu(R.menu.drawer_menu_signed_in);
+            MenuItem menuItem = navigationView.getMenu().findItem(R.id.nav_username);
+            menuItem.setTitle("Logged in as: " + mAuth.getCurrentUser().getDisplayName());
         }
     }
 
