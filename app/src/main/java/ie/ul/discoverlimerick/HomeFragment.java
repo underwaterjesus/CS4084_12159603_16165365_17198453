@@ -27,6 +27,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static com.google.firebase.storage.FirebaseStorage.getInstance;
 
@@ -36,7 +37,7 @@ public class HomeFragment extends Fragment {
     private RecyclerView.LayoutManager layoutManager;
     private ViewFlipper viewFlipper;
 
-    private ArrayList<String> imageNames = new ArrayList<>();
+    private ArrayList<String> imageNames;
     private CollectionReference collectionReference = FirebaseFirestore.getInstance().collection("Image Names");
 
     @Nullable
@@ -45,6 +46,7 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         viewFlipper = view.findViewById(R.id.flipper);
+
         populateFlipper();
 
         recyclerView = (RecyclerView) view.findViewById(R.id.category_recycler);
@@ -73,33 +75,37 @@ public class HomeFragment extends Fragment {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
+                    imageNames = new ArrayList<>();
                     try {
 
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             imageNames.add(document.getString("name"));
                         }
-
+                        Collections.shuffle(imageNames);
                         StorageReference storageReference = FirebaseStorage.getInstance().getReference("img");
                         StorageReference fileReference;
-                        boolean[] used = new boolean[imageNames.size()];
-                        for (int i = 0; i < 8 && i < imageNames.size(); ) {
-                            int rand = (int) (Math.random() * imageNames.size());
-
-                            if (!used[rand]) {
+                        //boolean[] used = new boolean[imageNames.size()];
+                        for (int i = 0; i < 8 && i < imageNames.size(); i++) {
                                 fileReference = storageReference.child(imageNames.get(i));
                                 ImageView img = new ImageView(getActivity());
                                 GlideApp.with(getActivity()).load(fileReference).into(img);
-                                used[rand] = true;
-                                i++;
                                 viewFlipper.addView(img);
-                            }
                         }
                     } catch (Exception e) {
                         String s = e.getMessage() == null ? "unable to give more details" : e.getMessage();
                         Log.d("populateFlipper", s);
                     }
                 }
+                Log.d("HomeFragment", "populateFlipper - " + Integer.toString(imageNames.size()));
             }
         });
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d("HomeFragment", "onSaveInstanceState");
+
+        //outState.putStringArrayList("imageNames", imageNames);
     }
 }
