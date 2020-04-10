@@ -11,12 +11,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class CycleLocationAdapter extends RecyclerView.Adapter implements Filterable {
+public class CycleLocationAdapter extends RecyclerView.Adapter implements Filterable, Serializable {
     private ArrayList<MyLocation> mDataset;
     private ArrayList<MyLocation> mDatasetAlwaysFull;
     private CycleLocationAdapter.OnItemClickListner mListener;
@@ -55,7 +56,7 @@ public class CycleLocationAdapter extends RecyclerView.Adapter implements Filter
     public CycleLocationAdapter(ArrayList<MyLocation> data) {
         mDataset = data;
         mDatasetAlwaysFull = new ArrayList<>(data);
-        //Log.d("AdapterConstructor", Arrays.toString(mDataset.toArray()) + "|" + Arrays.toString(mDatasetAlwaysFull.toArray()));
+        Log.d("AdapterConstructor", Integer.toString(mDataset.size()) + "|" + Integer.toString(mDatasetAlwaysFull.size()));
     }
 
     @NonNull

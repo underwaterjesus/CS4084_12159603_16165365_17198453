@@ -117,7 +117,24 @@ public class CategoryFragment extends Fragment {
                     }
                 });
                 mAdapter.notifyDataSetChanged();
+                try {
+                    mAdapter.getFilter().filter(searchView.getQuery());
+                } catch (Exception e) {
+                    String s = e.getMessage() == null ? "unable to give more details" : e.getMessage();
+                    Log.i("setOnItemClickListener", s);
+                }
             }
         }));
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //outState.putParcelable();
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
     }
 }

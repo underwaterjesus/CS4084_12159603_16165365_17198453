@@ -24,6 +24,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -105,7 +106,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         locationProvider = LocationServices.getFusedLocationProviderClient(this);
         monitorLocation();
 
-        goHome();
+        if (savedInstanceState == null) {
+            goHome();
+        }
         //navigationView.bringToFront();
     }
 
@@ -290,5 +293,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public static Location getLastLocation() {
         return mLastKnownLocation;
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        //getSupportFragmentManager().putFragment("activeFragment", outState, );
     }
 }
