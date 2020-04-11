@@ -2,6 +2,7 @@ package ie.ul.discoverlimerick;
 
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,8 @@ public class CategoryFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private CycleLocationAdapter mAdapter;
+
+    private Parcelable position;
 
     private SearchView searchView;
 
@@ -117,6 +120,9 @@ public class CategoryFragment extends Fragment {
                     }
                 });
                 mAdapter.notifyDataSetChanged();
+                if (position != null) {
+                    layoutManager.onRestoreInstanceState(position);
+                }
                 try {
                     mAdapter.getFilter().filter(searchView.getQuery());
                 } catch (Exception e) {
@@ -128,13 +134,19 @@ public class CategoryFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        //outState.putParcelable();
+    public void onPause() {
+        super.onPause();
+
+        Log.i("CategoryFragment", "onPause");
+        position = recyclerView.getLayoutManager().onSaveInstanceState();
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
+        Log.i("CategoryFragment", "onViewStateRestored");
+        if (savedInstanceState != null) {Log.i("onViewStateRestored", "savedInstanceState != null");
+            position = savedInstanceState.getParcelable("position");
+        }
     }
 }
