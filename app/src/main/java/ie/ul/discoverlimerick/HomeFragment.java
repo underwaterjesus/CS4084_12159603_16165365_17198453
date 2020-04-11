@@ -47,7 +47,8 @@ public class HomeFragment extends Fragment {
 
         viewFlipper = view.findViewById(R.id.flipper);
 
-        populateFlipper();
+        if(viewFlipper != null)
+            populateFlipper();
 
         recyclerView = (RecyclerView) view.findViewById(R.id.category_recycler);
         layoutManager = new LinearLayoutManager(getContext());

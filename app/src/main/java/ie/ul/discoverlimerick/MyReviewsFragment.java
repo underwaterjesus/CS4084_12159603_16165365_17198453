@@ -2,6 +2,8 @@ package ie.ul.discoverlimerick;
 
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +32,8 @@ public class MyReviewsFragment extends Fragment {
     private ReviewAdapter adapter;
 
     private static ArrayList<Review> reviews;
+
+    private Parcelable position;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,9 +75,9 @@ public class MyReviewsFragment extends Fragment {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             MyLocation location = new MyLocation("id", document.getString("location_name"), "address",
-                                                        "desc", 0.0, 0.0);
+                                    "desc", 0.0, 0.0);
                             Review toAdd = new Review(document.getId(), document.getString("username"), document.getString("review"),
-                                                        document.getTimestamp("time"), location);
+                                    document.getTimestamp("time"), location);
 
                             reviews.add(toAdd);
                         }
@@ -81,10 +85,42 @@ public class MyReviewsFragment extends Fragment {
                         MainActivity.showToast(getContext(), "Error: cannot access database");
                     }
 
-                    adapter.notifyDataSetChanged();
+                    try {
+                        adapter.notifyDataSetChanged();
+                        if (position != null) {
+                            layoutManager.onRestoreInstanceState(position);
+                        }
+                    } catch (Exception e) {
+                        String s = e.getMessage() != null ? e.getMessage() : "unable to give more details";
+                        Log.i("MyReviewsFragment: ", s);
+                    }
                 }
             });
         }
 
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        position = recyclerView.getLayoutManager().onSaveInstanceState();
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            //Log.i("MyReviewsFragment", "onViewStateRestored");
+            position = savedInstanceState.getParcelable("position");
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable("position", position);
     }
 }

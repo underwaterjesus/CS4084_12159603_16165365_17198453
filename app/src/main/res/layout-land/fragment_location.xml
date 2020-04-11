@@ -8,45 +8,58 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/tv1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
-            android:layout_marginBottom="8dp"
-            android:text="Placeholder Text"
-            android:textColor="@android:color/black"
-            android:textSize="30sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tv2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv1"
-            android:layout_marginStart="10dp"
-            android:text="Placeholder Text"
-            android:textColor="@android:color/black"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/tv3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv2"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="3dp"
-            android:text="Placeholder Text"
-            android:textColor="@android:color/black" />
-
-        <ImageView
-            android:id="@+id/img"
-            android:layout_width="fill_parent"
+        <ScrollView
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/tv3"
-            android:layout_above="@id/ll_1"
-            android:layout_marginTop="3dp"
-            android:layout_marginBottom="3dp" />
+            android:layout_above="@id/ll_1">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/tv1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Placeholder Text"
+                    android:textColor="@android:color/black"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv1"
+                    android:layout_marginStart="10dp"
+                    android:text="Placeholder Text"
+                    android:textColor="@android:color/black"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/tv3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv2"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="3dp"
+                    android:text="Placeholder Text"
+                    android:textColor="@android:color/black" />
+
+                <ImageView
+                    android:id="@+id/img"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv3"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="3dp" />
+
+            </RelativeLayout>
+
+        </ScrollView>
 
         <LinearLayout
             android:id="@+id/ll_1"
@@ -61,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:onClick="onLeaveReviewClicked"
-                android:text="Leave A\nReview" />
+                android:text="Leave Review" />
 
             <Button
                 android:id="@+id/read_reviews"
@@ -69,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:onClick="onReadReviewsClicked"
-                android:text="Read\nReviews" />
+                android:text="Read Reviews" />
 
         </LinearLayout>
 
@@ -106,8 +119,7 @@
             android:background="#167dfa"
             android:drawableRight="@drawable/ic_gps"
             android:drawablePadding="-45dp"
-            android:padding="8dp"
-            android:text="View On\nMap"
+            android:text="View On Map"
             android:textSize="18dp" />
 
     </RelativeLayout>

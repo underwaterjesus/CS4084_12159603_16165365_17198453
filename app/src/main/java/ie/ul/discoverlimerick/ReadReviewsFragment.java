@@ -1,6 +1,7 @@
 package ie.ul.discoverlimerick;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,8 @@ public class ReadReviewsFragment extends Fragment {
 
     private static CollectionReference db;
     private static ArrayList<Review> reviews;
+
+    private Parcelable position;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,7 +71,15 @@ public class ReadReviewsFragment extends Fragment {
                 } else {
                     MainActivity.showToast(getContext(), "Error: cannot access database");
                 }
-                adapter.notifyDataSetChanged();
+                try {
+                    adapter.notifyDataSetChanged();
+                    if (position != null) {
+                        layoutManager.onRestoreInstanceState(position);
+                    }
+                } catch (Exception e) {
+                    String s = e.getMessage() != null ? e.getMessage() : "unable to give more details";
+                    Log.i("ReadReviewsFragment: ", s);
+                }
             }
         });
     }
@@ -81,5 +92,28 @@ public class ReadReviewsFragment extends Fragment {
         adapter = new ReviewAdapter(reviews);
 
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        position = recyclerView.getLayoutManager().onSaveInstanceState();
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+
+        if (savedInstanceState != null) {//Log.i("ReadReviewsFragment", "onViewStateRestored");
+            position = savedInstanceState.getParcelable("position");
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable("position", position);
     }
 }

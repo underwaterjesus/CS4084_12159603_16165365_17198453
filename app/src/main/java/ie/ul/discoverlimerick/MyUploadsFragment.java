@@ -1,6 +1,7 @@
 package ie.ul.discoverlimerick;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,8 @@ public class MyUploadsFragment extends Fragment {
     private UploadAdapter adapter;
 
     private static ArrayList<Upload> uploads;
+
+    private Parcelable position;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,7 +77,15 @@ public class MyUploadsFragment extends Fragment {
                             }
                         }
                     }
-                    adapter.notifyDataSetChanged();
+                    try {
+                        adapter.notifyDataSetChanged();
+                        if (position != null) {
+                            layoutManager.onRestoreInstanceState(position);
+                        }
+                    } catch (Exception e) {
+                        String s = e.getMessage() != null ? e.getMessage() : "unable to give more details";
+                        Log.i("MyUploadsFragment: ", s);
+                    }
                 }
             });
         }
@@ -88,5 +99,28 @@ public class MyUploadsFragment extends Fragment {
         adapter = new UploadAdapter(uploads, getContext());
 
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        position = recyclerView.getLayoutManager().onSaveInstanceState();
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+
+        if (savedInstanceState != null) {Log.i("onViewStateRestored", "savedInstanceState != null");
+            position = savedInstanceState.getParcelable("position");
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable("position", position);
     }
 }

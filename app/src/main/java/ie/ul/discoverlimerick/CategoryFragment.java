@@ -137,16 +137,22 @@ public class CategoryFragment extends Fragment {
     public void onPause() {
         super.onPause();
 
-        Log.i("CategoryFragment", "onPause");
         position = recyclerView.getLayoutManager().onSaveInstanceState();
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        Log.i("CategoryFragment", "onViewStateRestored");
+
         if (savedInstanceState != null) {Log.i("onViewStateRestored", "savedInstanceState != null");
             position = savedInstanceState.getParcelable("position");
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable("position", position);
     }
 }
