@@ -21,6 +21,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
@@ -84,6 +87,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setTheme(R.style.AppTheme);
 
         super.onCreate(savedInstanceState);
+
+        if(!isConnected())
+            startActivity(new Intent(this, ConnectionActivity.class));
 
         setContentView(R.layout.activity_main);
 
@@ -302,5 +308,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onSaveInstanceState(outState);
 
         //getSupportFragmentManager().putFragment("activeFragment", outState, );
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        boolean isWifiConn = false;
+        boolean isMobileConn = false;
+
+        try {
+
+            for (Network network : connMgr.getAllNetworks()) {
+                NetworkInfo networkInfo = connMgr.getNetworkInfo(network);
+
+                if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                    isWifiConn |= networkInfo.isConnected();
+                }
+
+                if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+                    isMobileConn |= networkInfo.isConnected();
+                }
+
+                return isWifiConn || isMobileConn;
+
+            }
+        } catch (Exception e) {
+
+            String s = e.getMessage() == null ? "unable to give more details" : e.getMessage();
+            Log.d("isConnected", s);
+        }
+
+        return false;
     }
 }

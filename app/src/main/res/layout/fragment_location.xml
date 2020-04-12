@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:onClick="onLeaveReviewClicked"
-                android:text="Leave A\nReview" />
+                android:text="Leave Review" />
 
             <Button
                 android:id="@+id/read_reviews"
@@ -69,7 +69,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:onClick="onReadReviewsClicked"
-                android:text="Read\nReviews" />
+                android:text="Read Reviews" />
 
         </LinearLayout>
 

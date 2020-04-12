@@ -1,7 +1,12 @@
 package ie.ul.discoverlimerick;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
@@ -53,6 +58,9 @@ public class CategoryFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_category, container, false);
+
+        if(!isConnected())
+            startActivity(new Intent(getContext(), ConnectionActivity.class));
 
         getLocations(view);
 
@@ -136,9 +144,9 @@ public class CategoryFragment extends Fragment {
                         lp.addRule(RelativeLayout.CENTER_IN_PARENT);
                         textView.setLayoutParams(lp);
                         textView.setText("Nothing to see here yet!");
-                        textView.setTextSize(20);
+                        textView.setTextSize(30);
                         textView.setTypeface(null, Typeface.BOLD);
-                        textView.setTextColor(0xFF000000);;
+                        textView.setTextColor(0xffffffff);
                         relativeLayout.addView(textView);
                     }
                 } catch (Exception e) {
@@ -153,7 +161,12 @@ public class CategoryFragment extends Fragment {
     public void onPause() {
         super.onPause();
 
-        position = recyclerView.getLayoutManager().onSaveInstanceState();
+        try {
+            position = recyclerView.getLayoutManager().onSaveInstanceState();
+        } catch (Exception e) {
+            String s = e.getMessage() == null ? "unable to give more details" : e.getMessage();
+            Log.d("onPause", s);
+        }
     }
 
     @Override
@@ -171,5 +184,35 @@ public class CategoryFragment extends Fragment {
         super.onSaveInstanceState(outState);
 
         outState.putParcelable("position", position);
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager connMgr = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        boolean isWifiConn = false;
+        boolean isMobileConn = false;
+
+        try {
+
+            for (Network network : connMgr.getAllNetworks()) {
+                NetworkInfo networkInfo = connMgr.getNetworkInfo(network);
+
+                if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                    isWifiConn |= networkInfo.isConnected();
+                }
+
+                if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+                    isMobileConn |= networkInfo.isConnected();
+                }
+
+                return isWifiConn || isMobileConn;
+
+            }
+        } catch (Exception e) {
+
+            String s = e.getMessage() == null ? "unable to give more details" : e.getMessage();
+            Log.d("isConnected", s);
+        }
+
+        return false;
     }
 }

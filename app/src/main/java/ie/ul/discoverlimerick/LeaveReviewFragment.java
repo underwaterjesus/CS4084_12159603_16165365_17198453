@@ -1,8 +1,14 @@
 package ie.ul.discoverlimerick;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +45,9 @@ public class LeaveReviewFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_leave_review, container, false);
+
+        if(!isConnected())
+            startActivity(new Intent(getContext(), ConnectionActivity.class));
 
         db = FirebaseFirestore.getInstance();
         location = (MyLocation) getArguments().getSerializable("Location");
@@ -122,4 +131,33 @@ public class LeaveReviewFragment extends Fragment {
         }
     }
 
+    private boolean isConnected() {
+        ConnectivityManager connMgr = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        boolean isWifiConn = false;
+        boolean isMobileConn = false;
+
+        try {
+
+            for (Network network : connMgr.getAllNetworks()) {
+                NetworkInfo networkInfo = connMgr.getNetworkInfo(network);
+
+                if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                    isWifiConn |= networkInfo.isConnected();
+                }
+
+                if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+                    isMobileConn |= networkInfo.isConnected();
+                }
+
+                return isWifiConn || isMobileConn;
+
+            }
+        } catch (Exception e) {
+
+            String s = e.getMessage() == null ? "unable to give more details" : e.getMessage();
+            Log.d("isConnected", s);
+        }
+
+        return false;
+    }
 }

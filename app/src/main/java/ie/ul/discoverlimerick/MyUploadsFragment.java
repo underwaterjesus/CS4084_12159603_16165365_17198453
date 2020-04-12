@@ -1,6 +1,11 @@
 package ie.ul.discoverlimerick;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
@@ -41,6 +46,8 @@ public class MyUploadsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(!isConnected())
+            startActivity(new Intent(getContext(), ConnectionActivity.class));
         getMyUploads();
     }
 
@@ -94,9 +101,9 @@ public class MyUploadsFragment extends Fragment {
                             lp.addRule(RelativeLayout.CENTER_IN_PARENT);
                             textView.setLayoutParams(lp);
                             textView.setText("You haven't uploaded any images yet!");
-                            textView.setTextSize(20);
+                            textView.setTextSize(30);
                             textView.setTypeface(null, Typeface.BOLD);
-                            textView.setTextColor(0xFF000000);
+                            textView.setTextColor(0xffffffff);
                             relativeLayout.addView(textView);
                         }
 
@@ -143,5 +150,35 @@ public class MyUploadsFragment extends Fragment {
         super.onSaveInstanceState(outState);
 
         outState.putParcelable("position", position);
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager connMgr = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        boolean isWifiConn = false;
+        boolean isMobileConn = false;
+
+        try {
+
+            for (Network network : connMgr.getAllNetworks()) {
+                NetworkInfo networkInfo = connMgr.getNetworkInfo(network);
+
+                if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                    isWifiConn |= networkInfo.isConnected();
+                }
+
+                if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+                    isMobileConn |= networkInfo.isConnected();
+                }
+
+                return isWifiConn || isMobileConn;
+
+            }
+        } catch (Exception e) {
+
+            String s = e.getMessage() == null ? "unable to give more details" : e.getMessage();
+            Log.d("isConnected", s);
+        }
+
+        return false;
     }
 }
