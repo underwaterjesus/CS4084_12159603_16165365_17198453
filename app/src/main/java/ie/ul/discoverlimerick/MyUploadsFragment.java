@@ -1,11 +1,15 @@
 package ie.ul.discoverlimerick;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,6 +32,8 @@ public class MyUploadsFragment extends Fragment {
     private RecyclerView.LayoutManager layoutManager;
     private UploadAdapter adapter;
 
+    private RelativeLayout relativeLayout;
+
     private static ArrayList<Upload> uploads;
 
     private Parcelable position;
@@ -42,6 +48,8 @@ public class MyUploadsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_view_uploads, container, false);
+
+        relativeLayout = view.findViewById(R.id.uploads_relative_layout);
 
         setRecycler(view);
 
@@ -79,6 +87,19 @@ public class MyUploadsFragment extends Fragment {
                     }
                     try {
                         adapter.notifyDataSetChanged();
+
+                        if (uploads.isEmpty()) {
+                            TextView textView = new TextView(getContext());
+                            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.WRAP_CONTENT);
+                            lp.addRule(RelativeLayout.CENTER_IN_PARENT);
+                            textView.setLayoutParams(lp);
+                            textView.setText("You haven't uploaded any images yet!");
+                            textView.setTextSize(20);
+                            textView.setTypeface(null, Typeface.BOLD);
+                            textView.setTextColor(0xFF000000);
+                            relativeLayout.addView(textView);
+                        }
+
                         if (position != null) {
                             layoutManager.onRestoreInstanceState(position);
                         }

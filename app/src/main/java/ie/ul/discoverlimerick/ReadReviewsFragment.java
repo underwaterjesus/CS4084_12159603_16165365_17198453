@@ -1,11 +1,15 @@
 package ie.ul.discoverlimerick;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +33,8 @@ public class ReadReviewsFragment extends Fragment {
     private ReviewAdapter adapter;
     private MyLocation location;
 
+    private RelativeLayout relativeLayout;
+
     private static CollectionReference db;
     private static ArrayList<Review> reviews;
 
@@ -45,6 +51,9 @@ public class ReadReviewsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_read_reviews, container, false);
+
+        relativeLayout = view.findViewById(R.id.review_relative_layout);
+
         setCycler(view);
         return view;
     }
@@ -73,6 +82,19 @@ public class ReadReviewsFragment extends Fragment {
                 }
                 try {
                     adapter.notifyDataSetChanged();
+
+                    if (reviews.isEmpty()) {
+                        TextView textView = new TextView(getContext());
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.WRAP_CONTENT);
+                        lp.addRule(RelativeLayout.CENTER_IN_PARENT);
+                        textView.setLayoutParams(lp);
+                        textView.setText("Nothing to see here yet!");
+                        textView.setTextSize(20);
+                        textView.setTypeface(null, Typeface.BOLD);
+                        textView.setTextColor(0xFF000000);
+                        relativeLayout.addView(textView);
+                    }
+
                     if (position != null) {
                         layoutManager.onRestoreInstanceState(position);
                     }

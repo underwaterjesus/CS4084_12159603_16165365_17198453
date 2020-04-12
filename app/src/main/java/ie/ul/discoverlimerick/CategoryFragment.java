@@ -1,5 +1,6 @@
 package ie.ul.discoverlimerick;
 
+import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -7,7 +8,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +32,7 @@ import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
 public class CategoryFragment extends Fragment {
+    private RelativeLayout relativeLayout;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private CycleLocationAdapter mAdapter;
@@ -52,6 +56,7 @@ public class CategoryFragment extends Fragment {
 
         getLocations(view);
 
+        relativeLayout = view.findViewById(R.id.selected_category_linear_layout);
         searchView = view.findViewById(R.id.search_view);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -119,12 +124,23 @@ public class CategoryFragment extends Fragment {
                         tranny.commit();
                     }
                 });
-                mAdapter.notifyDataSetChanged();
-                if (position != null) {
-                    layoutManager.onRestoreInstanceState(position);
-                }
                 try {
+                    mAdapter.notifyDataSetChanged();
+                    if (position != null) {
+                        layoutManager.onRestoreInstanceState(position);
+                    }
                     mAdapter.getFilter().filter(searchView.getQuery());
+                    if (locations.isEmpty()) {
+                        TextView textView = new TextView(getContext());
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.WRAP_CONTENT);
+                        lp.addRule(RelativeLayout.CENTER_IN_PARENT);
+                        textView.setLayoutParams(lp);
+                        textView.setText("Nothing to see here yet!");
+                        textView.setTextSize(20);
+                        textView.setTypeface(null, Typeface.BOLD);
+                        textView.setTextColor(0xFF000000);;
+                        relativeLayout.addView(textView);
+                    }
                 } catch (Exception e) {
                     String s = e.getMessage() == null ? "unable to give more details" : e.getMessage();
                     Log.i("setOnItemClickListener", s);
@@ -144,7 +160,8 @@ public class CategoryFragment extends Fragment {
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
 
-        if (savedInstanceState != null) {Log.i("onViewStateRestored", "savedInstanceState != null");
+        if (savedInstanceState != null) {
+            Log.i("onViewStateRestored", "savedInstanceState != null");
             position = savedInstanceState.getParcelable("position");
         }
     }

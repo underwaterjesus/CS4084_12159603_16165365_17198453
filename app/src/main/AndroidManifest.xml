@@ -13,6 +13,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".ActivityMap"></activity>
         <activity android:name=".MainActivity"
+            android:theme="@style/SplashTheme"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
