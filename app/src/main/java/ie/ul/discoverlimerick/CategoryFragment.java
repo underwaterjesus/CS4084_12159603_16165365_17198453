@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toolbar;
@@ -59,7 +60,7 @@ public class CategoryFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_category, container, false);
 
-        if(!isConnected())
+        if (!isConnected())
             startActivity(new Intent(getContext(), ConnectionActivity.class));
 
         getLocations(view);
@@ -91,9 +92,9 @@ public class CategoryFragment extends Fragment {
     private void getLocations(final View v) {
         locations = new ArrayList<MyLocation>();
         db = FirebaseFirestore.getInstance().collection(MainActivity.selected_category);
-        db.orderBy("name", Query.Direction.ASCENDING);
+        //db.orderBy("name", Query.Direction.ASCENDING);
 
-        db.get().addOnCompleteListener((new OnCompleteListener<QuerySnapshot>() {
+        db.orderBy("name", Query.Direction.ASCENDING).get().addOnCompleteListener((new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 recyclerView = (RecyclerView) v.findViewById(R.id.category_cycler);
@@ -116,12 +117,14 @@ public class CategoryFragment extends Fragment {
                 mAdapter.setOnItemClickListener(new CycleLocationAdapter.OnItemClickListner() {
                     @Override
                     public void onItemClick(int position) {
-                        MainActivity.showToast(getContext(), locations.get(position).getName());
+                        //MainActivity.showToast(getContext(), locations.get(position).getName());
 
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("Location", locations.get(position));
 
                         MainActivity.selected_location = locations.get(position).getId();
+
+                        closeKeyboard();
 
                         Fragment frag = new LocationFragment();
                         frag.setArguments(bundle);
@@ -214,5 +217,14 @@ public class CategoryFragment extends Fragment {
         }
 
         return false;
+    }
+
+    private void closeKeyboard() {
+        View view = getActivity().getCurrentFocus();
+
+        if (view != null && view.getWindowToken() != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 }

@@ -71,10 +71,9 @@ public class MyUploadsFragment extends Fragment {
         } else {
             uploads = new ArrayList<Upload>();
 
-            Query query = FirebaseFirestore.getInstance().collectionGroup("Images").whereEqualTo("userID", MainActivity.mAuth.getCurrentUser().getUid())
-                    .orderBy("time", Query.Direction.DESCENDING);
+            Query query = FirebaseFirestore.getInstance().collectionGroup("Images").whereEqualTo("userID", MainActivity.mAuth.getCurrentUser().getUid());
 
-            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            query.orderBy("time", Query.Direction.DESCENDING).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if (task.isSuccessful()) {

@@ -69,9 +69,9 @@ public class ReadReviewsFragment extends Fragment {
         reviews = new ArrayList<Review>();
 
         db = FirebaseFirestore.getInstance().collection(MainActivity.selected_category).document(MainActivity.selected_location).collection("Reviews");
-        db.orderBy("time", Query.Direction.DESCENDING);
+        //db.orderBy("time", Query.Direction.DESCENDING);
 
-        db.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.orderBy("time", Query.Direction.DESCENDING).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {

@@ -67,7 +67,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onItemClick(int position) {
                 MainActivity.selected_category = MainActivity.CATEGORIES[position].getCategoryName();
-                MainActivity.showToast(getContext(), MainActivity.CATEGORIES[position].getCategoryName());
+                //MainActivity.showToast(getContext(), MainActivity.CATEGORIES[position].getCategoryName());
                 FragmentTransaction tranny = getActivity().getSupportFragmentManager().beginTransaction();
                 tranny.replace(R.id.fragment_container, new CategoryFragment());
                 tranny.addToBackStack(null);

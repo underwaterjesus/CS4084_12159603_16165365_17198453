@@ -83,8 +83,8 @@ public class MyReviewsFragment extends Fragment {
         } else {
             reviews = new ArrayList<Review>();
 
-            Query query = FirebaseFirestore.getInstance().collectionGroup("Reviews").whereEqualTo("userID", MainActivity.mAuth.getCurrentUser().getUid()).orderBy("time", Query.Direction.DESCENDING);
-            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            Query query = FirebaseFirestore.getInstance().collectionGroup("Reviews").whereEqualTo("userID", MainActivity.mAuth.getCurrentUser().getUid());
+            query.orderBy("time", Query.Direction.DESCENDING).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if (task.isSuccessful()) {

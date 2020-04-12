@@ -22,9 +22,9 @@ public class ConnectionActivity extends AppCompatActivity {
 
     public void reconnect(View view) {
         if(isConnected())
-            startActivity(new Intent(this, MainActivity.class));
+            super.onBackPressed();//startActivity(new Intent(this, MainActivity.class));
         else
-            Toast.makeText(this, "Unable to reconnect", Toast.LENGTH_LONG);
+            Toast.makeText(this, "Unable to reconnect", Toast.LENGTH_LONG).show();
     }
 
     public void toNetworkSettings(View view) {
@@ -59,5 +59,10 @@ public class ConnectionActivity extends AppCompatActivity {
         }
 
         return false;
+    }
+
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
     }
 }

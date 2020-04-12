@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -88,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         super.onCreate(savedInstanceState);
 
+        closeKeyboard();
+
         if(!isConnected())
             startActivity(new Intent(this, ConnectionActivity.class));
 
@@ -106,7 +109,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setMenu();
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close){
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                closeKeyboard();
+                super.onDrawerOpened(drawerView);
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                closeKeyboard();
+                super.onDrawerClosed(drawerView);
+            }
+        };
+
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -180,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
+        closeKeyboard();
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -188,8 +205,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 goHome();
                 return;
             }
-            super.onBackPressed();
             sendHome = false;
+            super.onBackPressed();
         }
     }
 
@@ -338,5 +355,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         return false;
+    }
+
+    private void closeKeyboard() {
+        View view = this.getCurrentFocus();
+
+        if(view != null && view.getWindowToken() != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            view.clearFocus();
+        }
     }
 }
