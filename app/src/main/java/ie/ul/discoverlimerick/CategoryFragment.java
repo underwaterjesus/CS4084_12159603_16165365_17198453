@@ -10,6 +10,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -143,6 +144,7 @@ public class CategoryFragment extends Fragment {
                     mAdapter.getFilter().filter(searchView.getQuery());
                     if (locations.isEmpty()) {
                         TextView textView = new TextView(getContext());
+                        textView.setGravity(Gravity.CENTER);
                         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.WRAP_CONTENT);
                         lp.addRule(RelativeLayout.CENTER_IN_PARENT);
                         textView.setLayoutParams(lp);

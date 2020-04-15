@@ -104,6 +104,7 @@ public class MyReviewsFragment extends Fragment {
                         adapter.notifyDataSetChanged();
                         if (reviews.isEmpty()) {
                             TextView textView = new TextView(getContext());
+                            textView.setGravity(android.view.Gravity.CENTER);
                             RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.WRAP_CONTENT);
                             lp.addRule(RelativeLayout.CENTER_IN_PARENT);
                             textView.setLayoutParams(lp);

@@ -34,6 +34,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.view.Gravity.CENTER;
+
 public class ViewUploadsFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
@@ -91,6 +93,7 @@ public class ViewUploadsFragment extends Fragment {
 
                     if (uploads.isEmpty()) {
                         TextView textView = new TextView(getContext());
+                        textView.setGravity(CENTER);
                         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.WRAP_CONTENT);
                         lp.addRule(RelativeLayout.CENTER_IN_PARENT);
                         textView.setLayoutParams(lp);
