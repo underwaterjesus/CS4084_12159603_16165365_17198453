@@ -7,6 +7,8 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +30,9 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.HashMap;
+import java.util.Locale;
+
 public class LocationFragment extends Fragment {
     private TextView tv1;
     private TextView tv2;
@@ -39,6 +44,7 @@ public class LocationFragment extends Fragment {
     private Button leaveImage;
     private Button viewImages;
     private Button viewMap;
+    public static Button speech;
 
     private CollectionReference db;
     private FirebaseStorage storage;
@@ -52,7 +58,7 @@ public class LocationFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_location, container, false);
 
-        if(!isConnected())
+        if (!isConnected())
             startActivity(new Intent(getContext(), ConnectionActivity.class));
 
         location = (MyLocation) getArguments().getSerializable("Location");
@@ -79,6 +85,13 @@ public class LocationFragment extends Fragment {
         leaveImage = (Button) view.findViewById(R.id.leave_image);
         viewImages = (Button) view.findViewById(R.id.view_images);
         viewMap = (Button) view.findViewById(R.id.mapBtn);
+        speech = (Button) view.findViewById(R.id.speech_button);
+
+        if (!(MainActivity.mTTS == null))
+            if (MainActivity.mTTS.isSpeaking())
+                speech.setBackgroundResource(R.drawable.speech_filled_stop);
+            else
+                speech.setBackgroundResource(R.drawable.speech_filled);
 
         leaveReview.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,23 +128,31 @@ public class LocationFragment extends Fragment {
             }
         });
 
+        speech.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speak();
+            }
+        });
+
         return view;
     }
 
+
     private void onLeaveImageClicked() {
-        if(MainActivity.mAuth.getCurrentUser() != null) {
+        if (MainActivity.mAuth.getCurrentUser() != null) {
             Fragment frag = new UploadFragment();
 
             FragmentTransaction tranny = getActivity().getSupportFragmentManager().beginTransaction();
             tranny.replace(R.id.fragment_container, frag);
             tranny.addToBackStack(null);
             tranny.commit();
-        }else {
+        } else {
             MainActivity.showToast(getContext(), "Please login to upload an image");
         }
     }
 
-    private void onViewImagesClicked(){
+    private void onViewImagesClicked() {
         Fragment frag = new ViewUploadsFragment();
 
         FragmentTransaction tranny = getActivity().getSupportFragmentManager().beginTransaction();
@@ -225,5 +246,103 @@ public class LocationFragment extends Fragment {
         }
 
         return false;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onPause() {
+        Log.d("LocationFragment", "onPause");
+        MainActivity.canShow = true;
+        if (MainActivity.mTTS.isSpeaking())
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (MainActivity.mTTS.isSpeaking())
+                        MainActivity.activitySpeechButton.setVisibility(View.VISIBLE);
+                }
+            });
+        super.onPause();
+    }
+
+    private void speak() {
+        if (MainActivity.canSpeak) {
+            if (MainActivity.mTTS.isSpeaking()) {
+                MainActivity.mTTS.stop();
+            } else {
+                String sayThis = tv3.getText().toString();
+                HashMap<String, String> hash = new HashMap<>(1);
+                hash.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "Location Description");
+                MainActivity.mTTS.speak(sayThis, TextToSpeech.QUEUE_FLUSH, hash);
+            }
+        } else {
+            MainActivity.showToast(getContext(), "Error: Text to Speech Unavailable");
+        }
+    }
+
+    @Override
+    public void onResume() {
+        Log.d("LocationFragment", "onResume");
+        MainActivity.canShow = false;
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("onResume", "run");
+                if (MainActivity.activitySpeechButton.getVisibility() == View.VISIBLE)
+                    MainActivity.activitySpeechButton.setVisibility(View.GONE);
+            }
+        });
+        /*MainActivity.hideButton();
+        if (MainActivity.mTTS == null) {
+            MainActivity.mTTS = new TextToSpeech(getActivity().getApplicationContext(), new TextToSpeech.OnInitListener() {
+                @Override
+                public void onInit(int status) {
+                    if (status == TextToSpeech.SUCCESS) {
+                        int result = MainActivity.mTTS.setLanguage(Locale.ENGLISH);
+
+                        if (!(result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED)) {
+                            MainActivity.canSpeak = true;
+                            speech.setBackgroundResource(R.drawable.speech_filled);
+                        }
+
+                        MainActivity.mTTS.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                            @Override
+                            public void onStart(String utteranceId) {
+                                Log.d("TTS", "onStart");
+                                speech.setBackgroundResource(R.drawable.speech_filled_stop);
+                            }
+
+                            @Override
+                            public void onDone(String utteranceId) {
+                                Log.d("TTS", "onDone");
+                                MainActivity.hideButton();
+                                speech.setBackgroundResource(R.drawable.speech_filled);
+                            }
+
+                            @Override
+                            public void onError(String utteranceId) {
+                                Log.d("TTS", "onError");
+                                speech.setBackgroundResource(R.drawable.speech_filled);
+                                MainActivity.hideButton();
+                            }
+
+                            @Override
+                            public void onStop(String utteranceId, boolean interrupted) {
+                                Log.d("TTS", "onStop");
+                                speech.setBackgroundResource(R.drawable.speech_filled);
+                                MainActivity.hideButton();
+
+                                super.onStop(utteranceId, interrupted);
+                            }
+                        });
+                    }
+                }
+            });
+        }*/
+
+        super.onResume();
     }
 }

@@ -122,6 +122,19 @@
             android:text="View On Map"
             android:textSize="18dp" />
 
+        <Button
+            android:id="@+id/speech_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignTop="@+id/mapBtn"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:elevation="0.0dp"
+            android:translationZ="0.0dp"
+            android:shadowColor="@color/fui_transparent"
+            android:background="@drawable/speech_filled_issue" />
+
     </RelativeLayout>
 
 </RelativeLayout>

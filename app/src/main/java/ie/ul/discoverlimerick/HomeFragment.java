@@ -49,12 +49,12 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        if(!isConnected())
+        if (!isConnected())
             startActivity(new Intent(getContext(), ConnectionActivity.class));
 
         viewFlipper = view.findViewById(R.id.flipper);
 
-        if(viewFlipper != null)
+        if (viewFlipper != null)
             populateFlipper();
 
         recyclerView = (RecyclerView) view.findViewById(R.id.category_recycler);
@@ -94,10 +94,14 @@ public class HomeFragment extends Fragment {
                         StorageReference fileReference;
                         //boolean[] used = new boolean[imageNames.size()];
                         for (int i = 0; i < 8 && i < imageNames.size(); i++) {
-                                fileReference = storageReference.child(imageNames.get(i));
+                            fileReference = storageReference.child(imageNames.get(i));
+                            if (getContext() != null) {
                                 ImageView img = new ImageView(getActivity());
-                                GlideApp.with(getActivity()).load(fileReference).into(img);
-                                viewFlipper.addView(img);
+                                if (getContext() != null) {
+                                    GlideApp.with(getContext()).load(fileReference).into(img);
+                                    viewFlipper.addView(img);
+                                }
+                            }
                         }
                     } catch (Exception e) {
                         String s = e.getMessage() == null ? "unable to give more details" : e.getMessage();

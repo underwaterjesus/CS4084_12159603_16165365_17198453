@@ -23,7 +23,21 @@
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/activity_speech_button"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="bottom|right"
+                android:layout_margin="8dp"
+                android:background="@drawable/speech_filled_stop"
+                android:elevation="0.0dp"
+                android:shadowColor="@color/fui_transparent"
+                android:translationZ="0.0dp"
+                android:visibility="gone" />
+
+        </FrameLayout>
 
     </LinearLayout>
 

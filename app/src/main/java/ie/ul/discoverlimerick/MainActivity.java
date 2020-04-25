@@ -26,11 +26,14 @@ import android.net.Network;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Looper;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -56,6 +59,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static FirebaseAuth mAuth;
@@ -79,7 +83,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static Location mLastKnownLocation;
     private static LocationRequest mLocationRequest;
     public static FusedLocationProviderClient locationProvider;
+    public static Button activitySpeechButton;
 
+    public static TextToSpeech mTTS;
+    public static boolean canSpeak = false;
+    public static boolean canShow = false;
 
     private NavigationView navigationView;
 
@@ -91,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         closeKeyboard();
 
-        if(!isConnected())
+        if (!isConnected())
             startActivity(new Intent(this, ConnectionActivity.class));
 
         setContentView(R.layout.activity_main);
@@ -109,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setMenu();
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close){
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
             @Override
             public void onDrawerOpened(View drawerView) {
                 closeKeyboard();
@@ -126,6 +134,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        activitySpeechButton = findViewById(R.id.activity_speech_button);
+        activitySpeechButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activitySpeechButtonClicked();
+            }
+        });
+
         getPermission();
         locationProvider = LocationServices.getFusedLocationProviderClient(this);
         monitorLocation();
@@ -134,6 +150,117 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             goHome();
         }
         //navigationView.bringToFront();
+        if (MainActivity.mTTS == null) {
+            MainActivity.mTTS = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+                @Override
+                public void onInit(int status) {
+                    if (status == TextToSpeech.SUCCESS) {
+                        int result = MainActivity.mTTS.setLanguage(Locale.ENGLISH);
+
+                        if (!(result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED)) {
+                            MainActivity.canSpeak = true;
+                            if (LocationFragment.speech != null)
+                                LocationFragment.speech.setBackgroundResource(R.drawable.speech_filled);
+                        }
+
+                        MainActivity.mTTS.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                            @Override
+                            public void onStart(String utteranceId) {
+                                Log.d("TTS", "onStart");
+                                LocationFragment.speech.setBackgroundResource(R.drawable.speech_filled_stop);
+                                thread2.run();
+                            }
+
+                            @Override
+                            public void onDone(String utteranceId) {
+                                Log.d("TTS", "onDone");
+                                LocationFragment.speech.setBackgroundResource(R.drawable.speech_filled);
+                                thread.run();
+                            }
+
+                            @Override
+                            public void onError(String utteranceId) {
+                                Log.d("TTS", "onError");
+                                LocationFragment.speech.setBackgroundResource(R.drawable.speech_filled);
+                                thread.run();
+                            }
+
+                            @Override
+                            public void onStop(String utteranceId, boolean interrupted) {
+                                Log.d("TTS", "onStop");
+                                LocationFragment.speech.setBackgroundResource(R.drawable.speech_filled);
+                                thread.run();
+
+                                super.onStop(utteranceId, interrupted);
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }
+
+    private void activitySpeechButtonClicked() {
+        if (mTTS != null)
+            if (mTTS.isSpeaking())
+                mTTS.stop();
+            else
+                activitySpeechButton.setVisibility(View.GONE);
+        else
+            activitySpeechButton.setVisibility(View.GONE);
+    }
+
+    Thread thread = new Thread() {
+        @Override
+        public void run() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    hideButton();
+                }
+            });
+        }
+    };
+
+    Thread thread2 = new Thread() {
+        @Override
+        public void run() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    showButton();
+                }
+            });
+        }
+    };
+
+    public void showButton() {
+        try {
+            if (mTTS != null) {
+                if (mTTS.isSpeaking() && canShow) {
+                    Log.d("showButton", "inside if");
+                    activitySpeechButton.setVisibility(View.VISIBLE);
+                }
+            }
+        } catch (Exception e) {
+            String s = e.getMessage() == null ? "null" : e.getMessage();
+            Log.d("showButton", s);
+        }
+    }
+
+    public void hideButton() {
+        try {
+            if (activitySpeechButton.getVisibility() == View.VISIBLE)
+                activitySpeechButton.setVisibility(View.GONE);
+        } catch (Exception e) {
+            String s = e.getMessage() == null ? "null" : e.getMessage();
+            Log.d("hideButton", s);
+        }
+    }
+
+    public static void unsetTTS() {
+        mTTS = null;
+        canSpeak = false;
     }
 
     private void monitorLocation() {
@@ -178,7 +305,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
@@ -360,10 +488,101 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void closeKeyboard() {
         View view = this.getCurrentFocus();
 
-        if(view != null && view.getWindowToken() != null) {
+        if (view != null && view.getWindowToken() != null) {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
             view.clearFocus();
         }
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d("MainActivity", "onStop");
+        try {
+            if (mTTS != null && !isChangingConfigurations()) {
+                mTTS.stop();
+                mTTS.shutdown();
+                unsetTTS();
+            }
+        } catch (Exception e) {
+            String s = e.getMessage() == null ? "null" : e.getMessage();
+            Log.d("onStop", s);
+        }
+
+        super.onStop();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        Log.d("MainActivity", "onRestoreInstanceState");
+        thread2.run();
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    protected void onRestart() {
+        Log.d("MainActivity", "onRestart");
+        if (MainActivity.mTTS == null) {
+            MainActivity.mTTS = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+                @Override
+                public void onInit(int status) {
+                    if (status == TextToSpeech.SUCCESS) {
+                        int result = MainActivity.mTTS.setLanguage(Locale.ENGLISH);
+
+                        if (!(result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED)) {
+                            MainActivity.canSpeak = true;
+                            if (LocationFragment.speech != null)
+                                LocationFragment.speech.setBackgroundResource(R.drawable.speech_filled);
+                        }
+
+                        MainActivity.mTTS.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                            @Override
+                            public void onStart(String utteranceId) {
+                                Log.d("TTS", "onStart");
+                                LocationFragment.speech.setBackgroundResource(R.drawable.speech_filled_stop);
+                                thread2.run();
+                            }
+
+                            @Override
+                            public void onDone(String utteranceId) {
+                                Log.d("TTS", "onDone");
+                                thread.run();
+                                LocationFragment.speech.setBackgroundResource(R.drawable.speech_filled);
+                            }
+
+                            @Override
+                            public void onError(String utteranceId) {
+                                Log.d("TTS", "onError");
+                                LocationFragment.speech.setBackgroundResource(R.drawable.speech_filled);
+                                thread.run();
+                            }
+
+                            @Override
+                            public void onStop(String utteranceId, boolean interrupted) {
+                                Log.d("TTS", "onStop");
+                                LocationFragment.speech.setBackgroundResource(R.drawable.speech_filled);
+                                thread.run();
+
+                                super.onStop(utteranceId, interrupted);
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        super.onRestart();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        //thread.run();
+
+        super.onDestroy();
     }
 }
