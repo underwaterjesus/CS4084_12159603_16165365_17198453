@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toolbar;
@@ -20,9 +21,11 @@ import android.widget.Toolbar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -30,6 +33,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +47,9 @@ public class ViewUploadsFragment extends Fragment {
 
     private RelativeLayout relativeLayout;
 
+    private ImageView hiddenImage;
+    private String fullString;
+
     private static CollectionReference db;
     private static ArrayList<Upload> uploads;
 
@@ -51,7 +58,7 @@ public class ViewUploadsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(!isConnected())
+        if (!isConnected())
             startActivity(new Intent(getContext(), ConnectionActivity.class));
         getUploads();
     }
@@ -62,10 +69,20 @@ public class ViewUploadsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_view_uploads, container, false);
 
         relativeLayout = view.findViewById(R.id.uploads_relative_layout);
+        hiddenImage = view.findViewById(R.id.fullscreen_img);
 
         setRecycler(view);
 
         return view;
+    }
+
+    public boolean isFullScreen() {
+        return hiddenImage.getVisibility() == View.VISIBLE;
+    }
+
+    public void exitFullScreen() {
+        hiddenImage.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
     }
 
     private void getUploads() {
@@ -123,6 +140,17 @@ public class ViewUploadsFragment extends Fragment {
         adapter = new UploadAdapter(uploads, getContext());
 
         recyclerView.setAdapter(adapter);
+
+        adapter.setOnItemClickListener(new UploadAdapter.OnItemClickListner() {
+            @Override
+            public void onItemClick(int position) {
+                hiddenImage.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+                Glide.with(getContext()).load(adapter.getmStorageReference().child(uploads.get(position).getfileName())).placeholder(R.drawable.upload_placeholder)
+                        .fitCenter().into(hiddenImage);
+                fullString = uploads.get(position).getfileName();
+            }
+        });
     }
 
     @Override
@@ -138,6 +166,13 @@ public class ViewUploadsFragment extends Fragment {
 
         if (savedInstanceState != null) {//Log.i("onViewStateRestored", "savedInstanceState != null");
             position = savedInstanceState.getParcelable("position");
+            fullString = savedInstanceState.getString("fullString");
+            if(savedInstanceState.getBoolean("fullScreen") && fullString != null){
+                recyclerView.setVisibility(View.GONE);
+                hiddenImage.setVisibility(View.VISIBLE);
+                Glide.with(getContext()).load(FirebaseStorage.getInstance().getReference("user_img").child(fullString)).placeholder(R.drawable.upload_placeholder)
+                        .fitCenter().into(hiddenImage);
+            }
         }
     }
 
@@ -146,6 +181,8 @@ public class ViewUploadsFragment extends Fragment {
         super.onSaveInstanceState(outState);
 
         outState.putParcelable("position", position);
+        outState.putString("fullString", fullString);
+        outState.putBoolean("fullScreen", isFullScreen());
     }
 
     private boolean isConnected() {

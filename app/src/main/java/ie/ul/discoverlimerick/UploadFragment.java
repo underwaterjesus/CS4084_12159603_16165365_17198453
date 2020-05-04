@@ -70,7 +70,11 @@ public class UploadFragment extends Fragment {
         chooseFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openFileChooser();
+                if (mUploadTask != null && mUploadTask.isInProgress()) {
+                    MainActivity.showToast(getContext(), "Upload in progress");
+                } else {
+                    openFileChooser();
+                }
             }
         });
 
@@ -110,6 +114,7 @@ public class UploadFragment extends Fragment {
                 mUploadTask = fileReference.putFile(mImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
                         Handler handler = new Handler();
                         handler.postDelayed(new Runnable() {
                             @Override
@@ -207,5 +212,14 @@ public class UploadFragment extends Fragment {
         }
 
         return false;
+    }
+
+    @Override
+    public void onDestroy() {
+        if(mUploadTask != null && !mUploadTask.isComplete()){
+            mUploadTask.cancel();
+            MainActivity.showToast(getContext(), "Pressing Back has cancelled upload.");
+        }
+        super.onDestroy();
     }
 }

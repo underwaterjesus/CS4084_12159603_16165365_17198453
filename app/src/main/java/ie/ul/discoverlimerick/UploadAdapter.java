@@ -69,7 +69,7 @@ public class UploadAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.upload_item, parent, false);
+                .inflate(R.layout.upload_item, parent, false);
 
         return new UploadHolder(view, mListener);
     }
@@ -79,16 +79,20 @@ public class UploadAdapter extends RecyclerView.Adapter {
         Upload upload = mDataset.get(position);
 
         StorageReference fileReference = mStorageReference.child(upload.getfileName());
-        Glide.with(context).load(fileReference).centerCrop().into(((UploadHolder)holder).imageView);
+        Glide.with(context).load(fileReference).placeholder(R.drawable.upload_placeholder).fitCenter().into(((UploadHolder) holder).imageView);
 
         SimpleDateFormat form = new SimpleDateFormat("d MMM yyyy");
         String date = form.format(upload.getTimestamp().toDate());
 
-        ((UploadHolder)holder).textView.setText("Left by: " + upload.getUsername() + " @ " + date);
+        ((UploadHolder) holder).textView.setText("Left by: " + upload.getUsername() + " @ " + date);
     }
 
     @Override
     public int getItemCount() {
         return mDataset.size();
+    }
+
+    public StorageReference getmStorageReference() {
+        return mStorageReference;
     }
 }

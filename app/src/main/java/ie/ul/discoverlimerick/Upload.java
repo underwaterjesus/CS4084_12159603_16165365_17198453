@@ -2,13 +2,15 @@ package ie.ul.discoverlimerick;
 
 import com.google.firebase.Timestamp;
 
-public class Upload {
+import java.io.Serializable;
+
+public class Upload implements Serializable {
     private Timestamp timestamp;
     private String username;
     private String fileName;
     private String userID;
 
-    public Upload(Timestamp timestamp, String username, String fileName, String userID){
+    public Upload(Timestamp timestamp, String username, String fileName, String userID) {
         this.timestamp = timestamp;
         this.username = username;
         this.fileName = fileName;
@@ -19,7 +21,7 @@ public class Upload {
         return userID;
     }
 
-    public void setUserID(String userID){
+    public void setUserID(String userID) {
         this.userID = userID;
     }
 
