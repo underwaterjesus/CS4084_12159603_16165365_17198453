@@ -10,9 +10,9 @@ To make it easy to find what you're looking for, the app splits these activities
 * Outdoors
 * Sports
 
-When you select an activity/location, you are presented with its name, address, EirCode(if applicable) and a brief description. For the visually impaired, we provide Text-to-Speech(TTS) functionality. You can view reviews and images of the location that have been left by other users. If you choose to create an account and log in, you can upload your own reviews and images. All of your uploads, across each location, can be viewed together, to save you looking in multiple places. The location can be viewd on Google Maps via our "View on Map" button.
+When you select an activity/location, you are presented with its name, address, EirCode(if applicable) and a brief description. For the visually impaired, we provide Text-to-Speech(TTS) functionality. You can view reviews and images of the location that have been left by other users. If you choose to create an account and log in, you can upload your own reviews and images. All of your uploads, across each location, can be viewed together on one screen, to save you looking in multiple places. The location can be viewed on Google Maps via our "View on Map" button.
 <br><br>
-If you allow the app access to your location, it will display the distance you currently are from any location. Our app does require internet access to work. If you are having issues, the app will assist you with your network connectivity problems. All our data is stored on a Google Firebase NoSQL database, and files are stored on Google Firestore. The Firebase project can be found [here](https://console.firebase.google.com/u/0/project/discover-limerick/overview "Firebase Project"). Access for authorised users only.
+If you allow the app access to your location, it will display the distance you currently are from any activity. Our app does require internet access to work. If you are having issues, the app will assist you with your network connectivity problems. All our data is stored on a Google Firebase NoSQL database, and files are stored on Google Firestore. The Firebase project can be found [here](https://console.firebase.google.com/u/0/project/discover-limerick/overview "Firebase Project"). Access for authorised users only.
 <br><br>
 ## Getting Started
 * What do I need to do, to get the app running on my device?
