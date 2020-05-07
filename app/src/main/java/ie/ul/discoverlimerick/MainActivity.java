@@ -334,7 +334,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return;
             }
             sendHome = false;
-            super.onBackPressed();
+            Fragment visibleFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            try {
+                if (((ViewUploadsFragment) visibleFragment).isFullScreen()) {
+                    ((ViewUploadsFragment) visibleFragment).exitFullScreen();
+                } else {
+                    super.onBackPressed();
+                }
+            } catch (Exception e) {
+                super.onBackPressed();
+            }
         }
     }
 
