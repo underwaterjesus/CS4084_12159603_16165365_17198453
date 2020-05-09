@@ -21,6 +21,7 @@ There are two versions of the drawer menu; the default menu and the menu for log
 A logged in user can view all the reviews they have left in one screen, and all the images thay have left in another.<br>
 These screens can be accessed from the relevant navgation drawer menu.<br>
 The relevant menu button is shown above each screen.
+To view an image fullscreen, simple tap it, and press the back button to return to the normal view.
 ![Users Collection of Reviews/Images](img/nav_4.png)
 
 ---
