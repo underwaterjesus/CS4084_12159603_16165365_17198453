@@ -20,7 +20,7 @@ If you allow the app access to your location, it will display the distance you c
   If you have access to the apk, you can transfer it to your device and select install. You may have to change your settings to allow third party apps. You can also run the app on your device in debug mode. Open the apk in Android studio and conect your mobile device to your computer. Select your device in Android Virtual Device Manager(AVD) and click the "Run app" button or press Shift + F10. You can also follow the steps in the next bullet point, but swapping the selected device in the AVD to your connected mobile device.
 * How do I run the app from source code in Android Studio?
 
-  The app can be opened from GitHub directly in Android Studio. When opening a new project, select "Git", under the "Check out project from Version Control" menu. You can also download the files in a compressed folder. You can extract the files and open the project in Android Studio. I have the apk, you can also open this in Android Studio. Once in Android Studio, click the "Run app", or press Shift + F10.<br>
+  The app can be opened from GitHub directly in Android Studio. When opening a new project, select "Git", under the "Check out project from Version Control" menu. You can also download the files in a compressed folder. You can extract the files and open the project in Android Studio. If you have the apk, you can also open this in Android Studio. Once in Android Studio, click the "Run app", or press Shift + F10.<br>
 * External Project Links
 
   [Discover Limerick Firebase Project](https://console.firebase.google.com/u/0/project/discover-limerick/overview "Firebase Project")<br>
