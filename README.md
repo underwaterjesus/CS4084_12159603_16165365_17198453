@@ -1,3 +1,8 @@
+# UPDATE 11 Aug 2020:
+### The Discover Limerick app has been graded as part of the CS4084 Mobile Application Development module.
+### The Google Cloud services connected with the app have been closed, and therefore cloning this repo will not result in a working application and the Google Cloud keys are no longer valid.
+### We are making this repo public for those interested in the project or who wish to reuse the code. If the repo is cloned it will need to be reconnected to a new Google Cloud account and new keys will need to be used in place of those in our code. The database would also have to be rebuilt or the corresponding code edited.
+
 # Discover Limerick
 Discover Limerick is an application designed for locals and visitors.<br>
 It aims to simplify the process of discovering things to see and do around Limerick City and the surrounding area.<br>
